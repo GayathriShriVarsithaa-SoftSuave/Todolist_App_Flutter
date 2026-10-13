@@ -16,7 +16,22 @@ class _LoginPage extends State<LoginPage> {
     // TODO: implement build
     return (Scaffold(
       body: Center(
-        child: Text('Login Screen', style: TextStyle(color: Colors.black)),
+        child: Column(
+          children: [
+            Expanded(
+              child: TextField(
+                
+              ),
+            ),
+            Expanded(child: TextField()),
+            GestureDetector(
+              onTap: () {
+                
+              },
+              child: Text('Don\'t have account? Sign Up'),
+            )
+          ],
+        )
       ),
     ));
   }
