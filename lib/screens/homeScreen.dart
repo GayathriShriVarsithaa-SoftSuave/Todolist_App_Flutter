@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import './../database/databasehelper.dart';
+import './../widgets/taskItem.dart';
+
+import 'package:provider/provider.dart';
+
+import './../providers/task_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,10 +19,7 @@ class _HomeScreen extends State<HomeScreen> {
   final searchcontroller = TextEditingController();
   final tasknamecontroller = TextEditingController();
   final taskdetailscontroller = TextEditingController();
-  final dbHelper = DataBaseahelper();
-
   Future<bool> insertTasktodb() async {
-    final createdAt = DateTime.now().toIso8601String();
     if (tasknamecontroller.text.trim().isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -26,11 +27,9 @@ class _HomeScreen extends State<HomeScreen> {
       return false;
     }
 
-    await dbHelper.insertTask(
+    await context.read<TaskProvider>().addTask(
       tasknamecontroller.text.trim(),
       taskdetailscontroller.text.trim(),
-      createdAt,
-      0,
     );
     return true;
   }
@@ -50,6 +49,7 @@ class _HomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = context.watch<TaskProvider>();
     // TODO: implement build
     return (Scaffold(
       body: SafeArea(
@@ -90,6 +90,31 @@ class _HomeScreen extends State<HomeScreen> {
                       ),
                     ],
                   ),
+                ),
+
+                Expanded(
+                  child: taskProvider.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        )
+                      : taskProvider.tasks.isEmpty
+                      ? const Center(
+                          child: Text('No tasks yet. Add your first task!'),
+                        )
+                      : ListView.builder(
+                          itemCount: taskProvider.tasks.length,
+                          itemBuilder: (context, index) {
+                            final task = taskProvider.tasks[index];
+
+                            return TaskItem(
+                              id: task['id'] as int,
+                              taskname: task['task_name'] as String,
+                              taskdes: task['task_des'] as String? ?? '',
+                              createdAt: task['created_at'] as String,
+                              completed: task['completed'] as int,
+                            );
+                          },
+                        ),
                 ),
               ],
             ),

@@ -89,8 +89,20 @@ CREATE TABLE TASKS(
 
   //get a particular task
 
-  Future<List<Map<String, dynamic>>> getTask(int id) async {
+  Future<Map<String, dynamic>?> getTask(int id) async {
     final db = await database;
-    return await db.query('TASKS', where: 'id=?', whereArgs: [id]);
+    final res = await db.query('TASKS', where: 'id=?', whereArgs: [id]);
+    if (res.isEmpty) {
+      return null;
+    }
+    return res.first;
+  }
+
+  //get task id
+
+  Future<List<int>> getTaskId() async {
+    final db = await database;
+    final result = await db.query('TASKS', columns: ['id']);
+    return result.map((task) => task['id'] as int).toList();
   }
 }
