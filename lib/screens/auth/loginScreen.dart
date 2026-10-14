@@ -15,15 +15,15 @@ class _LoginPage extends State<LoginPage> {
   final mailController = TextEditingController();
   final passwordContorller = TextEditingController();
   final auth = FirebaseAuth.instance;
+  bool ispasswordVisible = false;
   Future<void> login() async {
     try {
       final userCredential = await auth.signInWithEmailAndPassword(
         email: mailController.text.trim(),
         password: passwordContorller.text,
       );
-
+      print(userCredential);
       print('Login successful: ${userCredential.user?.email}');
-      context.pushReplacement('./home');
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message ?? 'Login failed')));
@@ -61,6 +61,7 @@ class _LoginPage extends State<LoginPage> {
                     controller: mailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.mail),
                       border: OutlineInputBorder(),
                       hintText: 'Enter your mail id',
                     ),
@@ -70,10 +71,23 @@ class _LoginPage extends State<LoginPage> {
                   padding: EdgeInsetsGeometry.all(10),
                   child: TextField(
                     controller: passwordContorller,
-                    obscureText: true,
+                    obscureText: !ispasswordVisible,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.lock),
                       border: OutlineInputBorder(),
                       hintText: 'Enter your password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          ispasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            ispasswordVisible = !ispasswordVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),

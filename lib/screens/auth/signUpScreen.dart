@@ -15,6 +15,9 @@ class _SignUpPage extends State<SignUpPage> {
   final passwordcontroller = TextEditingController();
   final conformpasswordcontroller = TextEditingController();
 
+  bool isPasswordVisible = false;
+  bool isConfirmPasswordVisible = false;
+
   Future<void> signup() async {
     final auth = FirebaseAuth.instance;
 
@@ -76,6 +79,7 @@ class _SignUpPage extends State<SignUpPage> {
                     controller: mailcontroller,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.mail),
                       border: OutlineInputBorder(),
                       hintText: 'Enter your mail id',
                     ),
@@ -85,10 +89,23 @@ class _SignUpPage extends State<SignUpPage> {
                   padding: EdgeInsetsGeometry.all(10),
                   child: TextField(
                     controller: passwordcontroller,
-                    obscureText: true,
+                    obscureText: !isPasswordVisible,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock),
+                      border: const OutlineInputBorder(),
                       hintText: 'Enter your password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isPasswordVisible = !isPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -96,10 +113,24 @@ class _SignUpPage extends State<SignUpPage> {
                   padding: EdgeInsetsGeometry.all(10),
                   child: TextField(
                     controller: conformpasswordcontroller,
-                    obscureText: true,
+                    obscureText: !isConfirmPasswordVisible,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Conform password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: const OutlineInputBorder(),
+                      hintText: 'Confirm password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isConfirmPasswordVisible =
+                                !isConfirmPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
