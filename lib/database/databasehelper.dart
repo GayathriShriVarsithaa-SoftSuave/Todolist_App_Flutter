@@ -8,17 +8,23 @@ class DataBaseahelper {
     final path = join(await getDatabasesPath(), 'task.db');
     _database = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await db.execute('''
 CREATE TABLE TASKS(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   task_name TEXT,
+  task_des TEXT,
   created_at TEXT,
   updated_at TEXT,
   completed INTEGER
 )
 ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE TASKS ADD COLUMN task_des TEXT');
+        }
       },
     );
     return _database!;
@@ -28,12 +34,14 @@ CREATE TABLE TASKS(
 
   Future<int> insertTask(
     String taskname,
+    String taskdes,
     String createdAt,
     int completed,
   ) async {
     final db = await database;
     return await db.insert('TASKS', {
       'task_name': taskname,
+      'task_des': taskdes,
       'created_at': createdAt,
       'updated_at': null,
       'completed': completed,
@@ -52,6 +60,7 @@ CREATE TABLE TASKS(
   Future<int> updateTask(
     int id,
     String taskName,
+    String taskdes,
     String CreatedAt,
     String UpdatedAt,
     int Completed,
@@ -61,6 +70,7 @@ CREATE TABLE TASKS(
       'TASKS',
       {
         'task_name': taskName,
+        'task_des': taskdes,
         'created_at': CreatedAt,
         'updated_at': UpdatedAt,
         'completed': Completed,
@@ -81,6 +91,6 @@ CREATE TABLE TASKS(
 
   Future<List<Map<String, dynamic>>> getTask(int id) async {
     final db = await database;
-    return await db.query('TASKS',where: 'id=?',whereArgs: [id]);
+    return await db.query('TASKS', where: 'id=?', whereArgs: [id]);
   }
 }

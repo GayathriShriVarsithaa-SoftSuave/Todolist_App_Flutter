@@ -24,39 +24,52 @@ class _HomeScreen extends State<HomeScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsetsGeometry.all(10),
-                        child: TextField(
-                          controller: searchcontroller,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Search Tasks..',
-                            prefixIcon: Icon(Icons.search),
+                Align(
+                  alignment: AlignmentGeometry.topLeft,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(10),
+                          child: TextField(
+                            controller: searchcontroller,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              hintText: 'Search Tasks..',
+                              prefixIcon: Icon(Icons.search),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        logout();
-                      },
-                      child: Text('Logout'),
-                    ),
-                  ],
+                      OutlinedButton(
+                        onPressed: () {
+                          logout();
+                        },
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          side: BorderSide(color: Colors.red),
+                        ),
+                        child: Text('Logout'),
+                      ),
+                    ],
+                  ),
                 ),
-                Spacer(),
+                
               ],
             ),
           ),
         ),
       ),
-      // floatingActionButton: ,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print('Add task clicked');
+        },
+        child: Icon(Icons.add),
+      ),
     ));
   }
 }
