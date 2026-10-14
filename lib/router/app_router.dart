@@ -1,10 +1,10 @@
 import 'package:go_router/go_router.dart';
 
-import './../Screens/auth/loginScreen.dart';
+import './../screens/auth/loginScreen.dart';
 
-import './../Screens/auth/signUpScreen.dart';
+import './../screens/auth/signUpScreen.dart';
 
-import './../Screens/homeScreen.dart';
+import './../screens/homeScreen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/login',
