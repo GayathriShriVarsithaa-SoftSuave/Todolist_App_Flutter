@@ -8,6 +8,9 @@ import 'screens/auth/loginScreen.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+
+import './providers/task_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,9 +18,12 @@ void main() async {
   await GoogleSignIn.instance.initialize();
   final auth = FirebaseAuth.instance;
   runApp(
-    MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: appRouter,
+    ChangeNotifierProvider(
+      create: (_) => TaskProvider(),
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerConfig: appRouter,
+      ),
     ),
   );
 }
