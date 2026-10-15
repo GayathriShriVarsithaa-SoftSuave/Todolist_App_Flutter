@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -17,6 +19,44 @@ class _SignUpPage extends State<SignUpPage> {
 
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
+
+  Future<void> signInWithGoogle() async {
+    try {
+      // 1. Open Google account selection
+      final googleUser = await GoogleSignIn.instance.authenticate();
+
+      // 2. Get the Google authentication token
+      final googleAuth = googleUser.authentication;
+
+      // 3. Create Firebase credential using Google's ID token
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+
+      // 4. Sign in to Firebase
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      print('Google sign-in successful');
+      print('Email: ${userCredential.user?.email}');
+      print('UID: ${userCredential.user?.uid}');
+
+      // Your existing GoRouter auth listener should
+      // redirect the authenticated user to /home.
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'Google sign-in failed')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+    }
+  }
 
   Future<void> signup() async {
     final auth = FirebaseAuth.instance;
@@ -136,6 +176,11 @@ class _SignUpPage extends State<SignUpPage> {
                   ),
                 ),
                 SizedBox(height: 20),
+                OutlinedButton.icon(
+                  onPressed: signInWithGoogle,
+                  icon: const Icon(Icons.login),
+                  label: const Text('Sign in with Google'),
+                ),
                 ElevatedButton(
                   onPressed: () {
                     signup();
