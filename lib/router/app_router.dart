@@ -5,10 +5,13 @@ import './../screens/auth/loginScreen.dart';
 import './../screens/auth/signUpScreen.dart';
 
 import './../screens/homeScreen.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 
+import 'dart:async';
+import 'package:provider/provider.dart';
+import './../providers/task_provider.dart';
 class AuthNotifier extends ChangeNotifier {
   late final StreamSubscription<User?> _subscription;
   AuthNotifier() {
@@ -24,7 +27,6 @@ class AuthNotifier extends ChangeNotifier {
 }
 
 final authNotifier = AuthNotifier();
-
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/login',
@@ -46,17 +48,23 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
   routes: [
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => LoginPage(),
-    ),
-    GoRoute(
-      path: '/signup',
-      builder: (context, state) => SignUpPage(),
-    ),
+    GoRoute(path: '/login', builder: (context, state) => LoginPage()),
+    GoRoute(path: '/signup', builder: (context, state) => SignUpPage()),
     GoRoute(
       path: '/home',
-      builder: (context, state) => HomeScreen(),
+      builder: (context, state) {
+        final uid = FirebaseAuth.instance.currentUser?.uid;
+
+        if (uid == null) {
+          return LoginPage();
+        }
+
+        return ChangeNotifierProvider(
+          key: ValueKey(uid),
+          create: (_) => TaskProvider(),
+          child: HomeScreen(),
+        );
+      },
     ),
   ],
 );

@@ -18,12 +18,9 @@ void main() async {
   await GoogleSignIn.instance.initialize();
   final auth = FirebaseAuth.instance;
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => TaskProvider(),
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        routerConfig: appRouter,
-      ),
+    MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      routerConfig: appRouter,
     ),
   );
 }

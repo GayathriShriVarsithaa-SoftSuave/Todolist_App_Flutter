@@ -37,6 +37,7 @@ class _SignUpPage extends State<SignUpPage> {
       if (!mounted) return;
 
       if (userCredential.user != null) {
+        print(UserCredential);
         context.go('/home');
       }
     } on FirebaseAuthException catch (e) {
