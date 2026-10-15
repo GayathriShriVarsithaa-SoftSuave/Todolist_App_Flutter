@@ -25,6 +25,8 @@ class TaskItem extends StatefulWidget {
 }
 
 class _TaskItem extends State<TaskItem> {
+  final List<String> selectedTags = [];
+  final tagcontroller = TextEditingController();
   final tasknamecontroller = TextEditingController();
   final taskdescontroller = TextEditingController();
   late bool isChecked;
@@ -51,7 +53,16 @@ class _TaskItem extends State<TaskItem> {
     // TODO: implement dispose
     taskdescontroller.dispose();
     tasknamecontroller.dispose();
+    tagcontroller.dispose();
     super.dispose();
+  }
+
+  Future<void> loadTaskTags() async {
+    final tags = await context.read<TaskProvider>().getTagsForTask(widget.id);
+
+    selectedTags
+      ..clear()
+      ..addAll(tags.map((tag) => tag['tag_name'] as String));
   }
 
   Future<void> changeCompletedStatus(bool value) async {
@@ -105,7 +116,12 @@ class _TaskItem extends State<TaskItem> {
           Text(widget.taskname),
           Spacer(),
           IconButton(
-            onPressed: () {
+            onPressed: () async {
+              selectedTags.clear();
+              tagcontroller.clear();
+              await loadTaskTags();
+              if (!context.mounted) return;
+              final taskProvider = context.read<TaskProvider>();
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
@@ -163,6 +179,111 @@ class _TaskItem extends State<TaskItem> {
                                 alignLabelWithHint: true,
                               ),
                             ),
+                            SizedBox(height: 16),
+
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Select Tags',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+
+                            Align(
+                              alignment: AlignmentGeometry.topStart,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  spacing: 8,
+                                  children: taskProvider.availableTags.map((tag) {
+                                    final tagName = tag['tag_name'] as String;
+                              
+                                    return FilterChip(
+                                      label: Text(tagName),
+                                      selected: selectedTags.contains(tagName),
+                                      onSelected: (selected) {
+                                        setModalState(() {
+                                          if (selected) {
+                                            if (!selectedTags.contains(tagName)) {
+                                              selectedTags.add(tagName);
+                                            }
+                                          } else {
+                                            selectedTags.remove(tagName);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 12),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: tagcontroller,
+                                    decoration: InputDecoration(
+                                      hintText: 'Create new tag',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.add_circle),
+                                  onPressed: () {
+                                    final name = tagcontroller.text.trim();
+
+                                    if (name.isEmpty ||
+                                        selectedTags.any(
+                                          (tag) =>
+                                              tag.toLowerCase() ==
+                                              name.toLowerCase(),
+                                        )) {
+                                      return;
+                                    }
+
+                                    setModalState(() {
+                                      selectedTags.add(name);
+                                      tagcontroller.clear();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 16),
+
+                            if (selectedTags.isNotEmpty) 
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Selected Tags',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Align(
+                              alignment: AlignmentGeometry.topStart,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  spacing: 8,
+                                  children: selectedTags.map((tag) {
+                                    return Chip(
+                                      label: Text(tag),
+                                      onDeleted: () {
+                                        setModalState(() {
+                                          selectedTags.remove(tag);
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 16),
 
                             SizedBox(height: 16),
                             ElevatedButton(
@@ -174,7 +295,10 @@ class _TaskItem extends State<TaskItem> {
                                   widget.createdAt,
                                   isChecked,
                                 );
-
+                                await taskProvider.updateTaskTags(
+                                  widget.id,
+                                  List<String>.from(selectedTags),
+                                );
                                 if (context.mounted) {
                                   Navigator.pop(context);
                                 }

@@ -19,18 +19,21 @@ class _HomeScreen extends State<HomeScreen> {
   final searchcontroller = TextEditingController();
   final tasknamecontroller = TextEditingController();
   final taskdetailscontroller = TextEditingController();
+  final tagcontroller = TextEditingController();
+  final List<String> selectedTags = [];
   Future<bool> insertTasktodb() async {
     if (tasknamecontroller.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter a task name')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please enter a task name')));
       return false;
     }
 
-    await context.read<TaskProvider>().addTask(
+    await context.read<TaskProvider>().addTaskWithTags(
       tasknamecontroller.text.trim(),
       taskdetailscontroller.text.trim(),
+      List<String>.from(selectedTags),
     );
+
     return true;
   }
 
@@ -44,6 +47,7 @@ class _HomeScreen extends State<HomeScreen> {
     searchcontroller.dispose();
     taskdetailscontroller.dispose();
     tasknamecontroller.dispose();
+    tagcontroller.dispose();
     super.dispose();
   }
 
@@ -55,7 +59,7 @@ class _HomeScreen extends State<HomeScreen> {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,11 +99,48 @@ class _HomeScreen extends State<HomeScreen> {
                   ),
                 ),
 
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Align(
+                    alignment: AlignmentGeometry.topStart,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        spacing: 8,
+                        children: [
+                          ChoiceChip(
+                            label: Text('All'),
+                            selected: taskProvider.selectedTagId == null,
+                            onSelected: (_) {
+                              taskProvider.selectTag(null);
+                            },
+                          ),
+                          ...taskProvider.availableTags.map((tag) {
+                            final tagId = tag['tag_id'] as int;
+
+                            return ChoiceChip(
+                              label: Text(tag['tag_name'] as String),
+                              selected: taskProvider.selectedTagId == tagId,
+                              onSelected: (_) {
+                                taskProvider.selectTag(
+                                  taskProvider.selectedTagId == tagId
+                                      ? null
+                                      : tagId,
+                                );
+                              },
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 12),
+
                 Expanded(
                   child: taskProvider.isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        )
+                      ? Center(child: CircularProgressIndicator.adaptive())
                       : taskProvider.filteredTasks.isEmpty
                       ? taskProvider.searchQuerey.isEmpty
                             ? Center(
@@ -133,60 +174,185 @@ class _HomeScreen extends State<HomeScreen> {
           {
             tasknamecontroller.clear();
             taskdetailscontroller.clear();
+            selectedTags.clear();
+            tagcontroller.clear();
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               builder: (context) {
-                return Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    16,
-                    20,
-                    16,
-                    MediaQuery.of(context).viewInsets.bottom + 20,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Add Task',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
+                return StatefulBuilder(
+                  builder: (context, setModalState) {
+                    return Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        20,
+                        16,
+                        MediaQuery.of(context).viewInsets.bottom + 20,
                       ),
-                      SizedBox(height: 10),
-                      TextField(
-                        controller: tasknamecontroller,
-                        decoration: InputDecoration(
-                          hintText: 'Task name',
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      TextField(
-                        controller: taskdetailscontroller,
-                        maxLines: 4,
-                        decoration: InputDecoration(
-                          hintText: 'Enter task description',
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Text(
+                                'Add Task',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
 
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final isSaved = await insertTasktodb();
+                            TextField(
+                              controller: tasknamecontroller,
+                              decoration: InputDecoration(
+                                hintText: 'Task name',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            SizedBox(height: 10),
 
-                          if (isSaved && context.mounted) {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text('Save Task'),
+                            TextField(
+                              controller: taskdetailscontroller,
+                              maxLines: 4,
+                              decoration: InputDecoration(
+                                hintText: 'Enter task description',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+
+                            SizedBox(height: 16),
+                            Text(
+                              'Select Tags',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                spacing: 8,
+                                children: taskProvider.availableTags.map((tag) {
+                                  final tagName = tag['tag_name'] as String;
+                                  final isSelected = selectedTags.contains(
+                                    tagName,
+                                  );
+
+                                  return FilterChip(
+                                    label: Text(tagName),
+                                    selected: isSelected,
+                                    onSelected: (selected) {
+                                      setModalState(() {
+                                        if (selected) {
+                                          if (!selectedTags.contains(tagName)) {
+                                            selectedTags.add(tagName);
+                                          }
+                                        } else {
+                                          selectedTags.remove(tagName);
+                                        }
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+
+                            SizedBox(height: 12),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: tagcontroller,
+                                    decoration: InputDecoration(
+                                      hintText: 'Create new tag',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    onSubmitted: (_) {
+                                      final name = tagcontroller.text.trim();
+
+                                      if (name.isNotEmpty &&
+                                          !selectedTags.any(
+                                            (tag) =>
+                                                tag.toLowerCase() ==
+                                                name.toLowerCase(),
+                                          )) {
+                                        setModalState(() {
+                                          selectedTags.add(name);
+                                          tagcontroller.clear();
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.add_circle),
+                                  onPressed: () {
+                                    final name = tagcontroller.text.trim();
+
+                                    if (name.isNotEmpty &&
+                                        !selectedTags.any(
+                                          (tag) =>
+                                              tag.toLowerCase() ==
+                                              name.toLowerCase(),
+                                        )) {
+                                      setModalState(() {
+                                        selectedTags.add(name);
+                                        tagcontroller.clear();
+                                      });
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+
+                            if (selectedTags.isNotEmpty) ...[
+                              SizedBox(height: 8),
+                              Text(
+                                'Selected Tags',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  spacing: 8,
+                                  children: selectedTags.map((tag) {
+                                    return Chip(
+                                      label: Text(tag),
+                                      onDeleted: () {
+                                        setModalState(() {
+                                          selectedTags.remove(tag);
+                                        });
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+
+                            SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final isSaved = await insertTasktodb();
+
+                                  if (isSaved && context.mounted) {
+                                    selectedTags.clear();
+                                    tagcontroller.clear();
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: Text('Save Task'),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             );
