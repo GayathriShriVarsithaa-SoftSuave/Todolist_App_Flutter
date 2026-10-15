@@ -24,6 +24,7 @@ class _LoginPage extends State<LoginPage> {
       );
       print(userCredential);
       print('Login successful: ${userCredential.user?.email}');
+      print('uid:${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message ?? 'Login failed')));

@@ -8,11 +8,12 @@ class DataBaseahelper {
     final path = join(await getDatabasesPath(), 'task.db');
     _database = await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute('''
 CREATE TABLE TASKS(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT,
   task_name TEXT,
   task_des TEXT,
   created_at TEXT,
@@ -25,6 +26,9 @@ CREATE TABLE TASKS(
         if (oldVersion < 2) {
           await db.execute('ALTER TABLE TASKS ADD COLUMN task_des TEXT');
         }
+        if (oldVersion < 3) {
+          await db.execute('ALTER TABLE TASKS ADD COLUMN uid TEXT');
+        }
       },
     );
     return _database!;
@@ -33,6 +37,7 @@ CREATE TABLE TASKS(
   //Add a task
 
   Future<int> insertTask(
+    String uid,
     String taskname,
     String taskdes,
     String createdAt,
@@ -40,6 +45,7 @@ CREATE TABLE TASKS(
   ) async {
     final db = await database;
     return await db.insert('TASKS', {
+      'uid':uid,
       'task_name': taskname,
       'task_des': taskdes,
       'created_at': createdAt,
@@ -59,6 +65,7 @@ CREATE TABLE TASKS(
 
   Future<int> updateTask(
     int id,
+    String uid,
     String taskName,
     String taskdes,
     String CreatedAt,
@@ -69,6 +76,7 @@ CREATE TABLE TASKS(
     return await db.update(
       'TASKS',
       {
+        'uid':uid,
         'task_name': taskName,
         'task_des': taskdes,
         'created_at': CreatedAt,
@@ -82,9 +90,9 @@ CREATE TABLE TASKS(
 
   //get all the tasks
 
-  Future<List<Map<String, dynamic>>> getAllTask() async {
+  Future<List<Map<String, dynamic>>> getAllTask(String uid) async {
     final db = await database;
-    return await db.query('TASKS');
+    return await db.query('TASKS',where:'uid=?',whereArgs: [uid]);
   }
 
   //get a particular task
