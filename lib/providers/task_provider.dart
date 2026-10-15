@@ -18,6 +18,25 @@ class TaskProvider extends ChangeNotifier {
     loadTasks();
   }
 
+  String searchQuerey = '';
+  void searchTask(String query) {
+  searchQuerey = query;
+
+  if (searchQuerey.isEmpty) {
+    filteredTasks = tasks;
+  } else {
+    filteredTasks = tasks.where((task) {
+      return task['task_name']
+          .toString()
+          .toLowerCase()
+          .contains(searchQuerey.toLowerCase());
+    }).toList();
+  }
+
+  notifyListeners();
+}
+  List<Map<String, dynamic>> filteredTasks = [];
+
   Future<void> loadTasks() async {
     try {
       final uid = currentUserId;
@@ -30,6 +49,15 @@ class TaskProvider extends ChangeNotifier {
       }
 
       tasks = await _dbHelper.getAllTask(uid);
+      if (searchQuerey.isEmpty) {
+        filteredTasks = tasks;
+      } else {
+        filteredTasks = tasks.where((task) {
+          return task['task_name'].toString().toLowerCase().contains(
+            searchQuerey.toLowerCase(),
+          );
+        }).toList();
+      }
     } finally {
       isLoading = false;
       notifyListeners();
