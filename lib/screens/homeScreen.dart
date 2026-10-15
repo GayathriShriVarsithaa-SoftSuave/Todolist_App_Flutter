@@ -70,6 +70,9 @@ class _HomeScreen extends State<HomeScreen> {
                           child: TextField(
                             controller: searchcontroller,
                             keyboardType: TextInputType.text,
+                            onChanged: (value) {
+                              context.read<TaskProvider>().searchTask(value);
+                            },
                             decoration: InputDecoration(
                               hintText: 'Search Tasks..',
                               prefixIcon: Icon(Icons.search),
@@ -97,14 +100,18 @@ class _HomeScreen extends State<HomeScreen> {
                       ? const Center(
                           child: CircularProgressIndicator.adaptive(),
                         )
-                      : taskProvider.tasks.isEmpty
-                      ? const Center(
-                          child: Text('No tasks yet. Add your first task!'),
-                        )
+                      : taskProvider.filteredTasks.isEmpty
+                      ? taskProvider.searchQuerey.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'No tasks yet. Add your first task!',
+                                ),
+                              )
+                            : Center(child: Text('No matching tasks found'))
                       : ListView.builder(
-                          itemCount: taskProvider.tasks.length,
+                          itemCount: taskProvider.filteredTasks.length,
                           itemBuilder: (context, index) {
-                            final task = taskProvider.tasks[index];
+                            final task = taskProvider.filteredTasks[index];
 
                             return TaskItem(
                               id: task['id'] as int,
