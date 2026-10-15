@@ -45,7 +45,7 @@ class TaskProvider extends ChangeNotifier {
     await loadTasks();
   }
 
-  Future<void> changeCompletedStatus({
+  Future<void> editTask({
     required int id,
     required String taskname,
     required String taskdes,
