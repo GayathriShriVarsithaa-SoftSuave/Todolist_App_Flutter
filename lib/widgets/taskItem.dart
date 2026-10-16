@@ -97,13 +97,24 @@ class _TaskItem extends State<TaskItem> {
 
   @override
   Widget build(BuildContext context) {
+    const backgroundColor = Color(0xFF0F172A);
+    const foregroundColor = Color(0xFFE9DDFF);
+    const cardColor = Color(0xFF1E293B);
     // TODO: implement build
-    return (Card(
-      elevation: 10,
+    return Card(
+      color: cardColor,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: foregroundColor),
+      ),
       child: Row(
         children: [
           Spacer(),
           Checkbox(
+            activeColor: foregroundColor,
+            checkColor: backgroundColor,
+            side: BorderSide(color: foregroundColor),
             value: isChecked,
             onChanged: (bool? value) async {
               if (value == null) return;
@@ -113,9 +124,13 @@ class _TaskItem extends State<TaskItem> {
               await changeCompletedStatus(value);
             },
           ),
-          Text(widget.taskname),
+          Text(
+            widget.taskname,
+            style: TextStyle(color: foregroundColor, fontSize: 16),
+          ),
           Spacer(),
           IconButton(
+            color: foregroundColor,
             onPressed: () async {
               selectedTags.clear();
               tagcontroller.clear();
@@ -123,6 +138,10 @@ class _TaskItem extends State<TaskItem> {
               if (!context.mounted) return;
               final taskProvider = context.read<TaskProvider>();
               showModalBottomSheet(
+                backgroundColor: Color(0xFF0F172A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
                 context: context,
                 isScrollControlled: true,
                 builder: (context) {
@@ -143,6 +162,7 @@ class _TaskItem extends State<TaskItem> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
+                                color: Color(0xFFE9DDFF),
                               ),
                             ),
                             SizedBox(height: 10),
@@ -150,15 +170,33 @@ class _TaskItem extends State<TaskItem> {
                               children: [
                                 Expanded(
                                   child: TextField(
+                                    style: TextStyle(color: Color(0xFFE9DDFF)),
                                     controller: tasknamecontroller,
                                     decoration: InputDecoration(
-                                      labelText: 'Task name',
-                                      border: OutlineInputBorder(),
-                                      alignLabelWithHint: true,
+                                      hintText: 'Task Title',
+                                      labelStyle: TextStyle(
+                                        color: Color(0xFFE9DDFF),
+                                      ),
+                                      hintStyle: TextStyle(
+                                        color: Color(0xFFB8A7D9),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFB8A7D9),
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFE9DDFF),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                                 Checkbox(
+                                  activeColor: Color(0xFFE9DDFF),
+                                  checkColor: Color(0xFF0F172A),
+                                  side: BorderSide(color: Color(0xFFE9DDFF)),
                                   value: isChecked,
                                   onChanged: (bool? value) {
                                     if (value == null) return;
@@ -171,12 +209,23 @@ class _TaskItem extends State<TaskItem> {
                             ),
                             SizedBox(height: 10),
                             TextField(
+                              style: TextStyle(color: Color(0xFFE9DDFF)),
                               controller: taskdescontroller,
                               maxLines: 4,
                               decoration: InputDecoration(
-                                labelText: 'Enter task description',
-                                border: OutlineInputBorder(),
-                                alignLabelWithHint: true,
+                                hintText: 'Task description',
+                                labelStyle: TextStyle(color: Color(0xFFE9DDFF)),
+                                hintStyle: TextStyle(color: Color(0xFFB8A7D9)),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color(0xFFB8A7D9),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color(0xFFE9DDFF),
+                                  ),
+                                ),
                               ),
                             ),
                             SizedBox(height: 16),
@@ -185,7 +234,10 @@ class _TaskItem extends State<TaskItem> {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 'Select Tags',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFE9DDFF),
+                                ),
                               ),
                             ),
 
@@ -195,16 +247,26 @@ class _TaskItem extends State<TaskItem> {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   spacing: 8,
-                                  children: taskProvider.availableTags.map((tag) {
+                                  children: taskProvider.availableTags.map((
+                                    tag,
+                                  ) {
                                     final tagName = tag['tag_name'] as String;
-                              
+
                                     return FilterChip(
+                                      selectedColor: Color(0xFF475569),
+                                      checkmarkColor: Color(0xFFE9DDFF),
+                                      labelStyle: TextStyle(
+                                        color: Color(0xFFE9DDFF),
+                                      ),
+                                      backgroundColor: Color(0xFF1E293B),
                                       label: Text(tagName),
                                       selected: selectedTags.contains(tagName),
                                       onSelected: (selected) {
                                         setModalState(() {
                                           if (selected) {
-                                            if (!selectedTags.contains(tagName)) {
+                                            if (!selectedTags.contains(
+                                              tagName,
+                                            )) {
                                               selectedTags.add(tagName);
                                             }
                                           } else {
@@ -224,15 +286,34 @@ class _TaskItem extends State<TaskItem> {
                               children: [
                                 Expanded(
                                   child: TextField(
+                                    style: TextStyle(color: Color(0xFFE9DDFF)),
                                     controller: tagcontroller,
                                     decoration: InputDecoration(
                                       hintText: 'Create new tag',
-                                      border: OutlineInputBorder(),
+                                      labelStyle: TextStyle(
+                                        color: Color(0xFFE9DDFF),
+                                      ),
+                                      hintStyle: TextStyle(
+                                        color: Color(0xFFB8A7D9),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFB8A7D9),
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0xFFE9DDFF),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.add_circle),
+                                  icon: Icon(
+                                    Icons.add_circle,
+                                    color: Color(0xFFE9DDFF),
+                                  ),
                                   onPressed: () {
                                     final name = tagcontroller.text.trim();
 
@@ -255,14 +336,17 @@ class _TaskItem extends State<TaskItem> {
                             ),
                             SizedBox(height: 16),
 
-                            if (selectedTags.isNotEmpty) 
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Selected Tags',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                            if (selectedTags.isNotEmpty)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Selected Tags',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE9DDFF),
+                                  ),
+                                ),
                               ),
-                            ),
                             Align(
                               alignment: AlignmentGeometry.topStart,
                               child: SingleChildScrollView(
@@ -271,6 +355,10 @@ class _TaskItem extends State<TaskItem> {
                                   spacing: 8,
                                   children: selectedTags.map((tag) {
                                     return Chip(
+                                      labelStyle: TextStyle(
+                                        color: Color(0xFFE9DDFF),
+                                      ),
+                                      backgroundColor: Color(0xFF1E293B),
                                       label: Text(tag),
                                       onDeleted: () {
                                         setModalState(() {
@@ -316,6 +404,7 @@ class _TaskItem extends State<TaskItem> {
             icon: Icon(Icons.edit),
           ),
           IconButton(
+            color: Color(0xFFFF8A8A),
             onPressed: () {
               deleteTask();
             },
@@ -324,6 +413,6 @@ class _TaskItem extends State<TaskItem> {
           Spacer(),
         ],
       ),
-    ));
+    );
   }
 }
