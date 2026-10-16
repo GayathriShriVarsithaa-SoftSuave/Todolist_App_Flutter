@@ -98,48 +98,93 @@ class _SignUpPage extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return (Scaffold(
+    const backgroundColor = Color(0xFF0F172A);
+    const foregroundColor = Color(0xFFE9DDFF);
+    return Scaffold(
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
                   'SIGN UP',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                    color: foregroundColor,
+                  ),
                 ),
-                SizedBox(height: 20),
-
+                SizedBox(height: 24),
                 Padding(
-                  padding: EdgeInsetsGeometry.all(10),
+                  padding: EdgeInsets.all(10),
                   child: TextField(
                     controller: mailcontroller,
                     keyboardType: TextInputType.emailAddress,
+                    style: TextStyle(color: foregroundColor),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.mail),
-                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(
+                        Icons.mail_outline,
+                        color: foregroundColor,
+                      ),
                       hintText: 'Enter your mail id',
+                      hintStyle: TextStyle(
+                        color: foregroundColor,
+                      ),
+                      filled: true,
+                      fillColor: foregroundColor,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: foregroundColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: foregroundColor,
+                          width: 2,
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsGeometry.all(10),
+                  padding: EdgeInsets.all(10),
                   child: TextField(
                     controller: passwordcontroller,
                     obscureText: !isPasswordVisible,
+                    style: TextStyle(color: foregroundColor),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock),
-                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(
+                        Icons.lock_outline,
+                        color: foregroundColor,
+                      ),
                       hintText: 'Enter your password',
+                      hintStyle: TextStyle(
+                        color: foregroundColor,
+                      ),
+                      filled: true,
+                      fillColor: foregroundColor,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: foregroundColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: foregroundColor,
+                          width: 2,
+                        ),
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           isPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
+                          color: foregroundColor,
                         ),
                         onPressed: () {
                           setState(() {
@@ -151,19 +196,39 @@ class _SignUpPage extends State<SignUpPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsGeometry.all(10),
+                  padding: EdgeInsets.all(10),
                   child: TextField(
                     controller: conformpasswordcontroller,
                     obscureText: !isConfirmPasswordVisible,
+                    style: TextStyle(color: foregroundColor),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: const OutlineInputBorder(),
+                      prefixIcon: Icon(
+                        Icons.lock_outline,
+                        color: foregroundColor,
+                      ),
                       hintText: 'Confirm password',
+                      hintStyle: TextStyle(
+                        color: foregroundColor,
+                      ),
+                      filled: true,
+                      fillColor: foregroundColor,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: foregroundColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: foregroundColor,
+                          width: 2,
+                        ),
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           isConfirmPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
+                          color: foregroundColor,
                         ),
                         onPressed: () {
                           setState(() {
@@ -176,29 +241,63 @@ class _SignUpPage extends State<SignUpPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-                OutlinedButton.icon(
-                  onPressed: signInWithGoogle,
-                  icon: const Icon(Icons.login),
-                  label: const Text('Sign in with Google'),
+                Padding(
+                  padding: EdgeInsets.only(left: 30, right: 30),
+                  child: OutlinedButton.icon(
+                    onPressed: signInWithGoogle,
+                    icon: Icon(Icons.login, color: foregroundColor),
+                    label: Text(
+                      'Sign in with Google',
+                      style: TextStyle(color: foregroundColor),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: foregroundColor),
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    signup();
-                  },
-                  child: Text('Submit'),
+                SizedBox(height: 15),
+                Padding(
+                  padding: EdgeInsets.only(left: 30, right: 30),
+                  child: ElevatedButton(
+                    onPressed: signup,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: foregroundColor,
+                      foregroundColor: backgroundColor,
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Submit',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 5),
-                GestureDetector(
-                  onTap: () {
-                    context.pushReplacement('/login');
-                  },
-                  child: Text('Already have an account?'),
+                SizedBox(height: 16),
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      context.pushReplacement('/login');
+                    },
+                    child: Text(
+                      'Already have an account? Login',
+                      style: TextStyle(color: foregroundColor, fontSize: 14),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
-    ));
+    );
   }
 }
