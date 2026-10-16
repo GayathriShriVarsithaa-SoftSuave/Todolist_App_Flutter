@@ -133,10 +133,10 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                       hintText: 'Enter your mail id',
                       hintStyle: TextStyle(
-                        color: foregroundColor.withValues(alpha: 0.65),
+                        color: foregroundColor,
                       ),
                       filled: true,
-                      fillColor: foregroundColor.withValues(alpha: 0.05),
+                      fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: foregroundColor),
@@ -164,10 +164,10 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                       hintText: 'Enter your password',
                       hintStyle: TextStyle(
-                        color: foregroundColor.withValues(alpha: 0.65),
+                        color: foregroundColor,
                       ),
                       filled: true,
-                      fillColor: foregroundColor.withValues(alpha: 0.05),
+                      fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: foregroundColor),
@@ -208,10 +208,10 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                       hintText: 'Confirm password',
                       hintStyle: TextStyle(
-                        color: foregroundColor.withValues(alpha: 0.65),
+                        color: foregroundColor,
                       ),
                       filled: true,
-                      fillColor: foregroundColor.withValues(alpha: 0.05),
+                      fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: foregroundColor),

@@ -93,9 +93,7 @@ class _HomeScreen extends State<HomeScreen> {
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(
-                                  color: foregroundColor.withValues(
-                                    alpha: 0.25,
-                                  ),
+                                  color: foregroundColor
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -137,7 +135,7 @@ class _HomeScreen extends State<HomeScreen> {
                             backgroundColor: cardColor,
                             selectedColor: Color(0xFF475569),
                             side: BorderSide(
-                              color: foregroundColor.withValues(alpha: 0.25),
+                              color: foregroundColor,
                             ),
                             label: Text('All'),
                             selected: taskProvider.selectedTagId == null,
@@ -154,7 +152,7 @@ class _HomeScreen extends State<HomeScreen> {
                               backgroundColor: cardColor,
                               selectedColor: Color(0xFF475569),
                               side: BorderSide(
-                                color: foregroundColor.withValues(alpha: 0.25),
+                                color: foregroundColor,
                               ),
                               label: Text(tag['tag_name'] as String),
                               selected: taskProvider.selectedTagId == tagId,
