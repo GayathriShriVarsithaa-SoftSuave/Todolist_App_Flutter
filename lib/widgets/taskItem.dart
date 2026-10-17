@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 
 import './../providers/task_provider.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/foundation.dart';
+
 class TaskItem extends StatefulWidget {
   final int id;
   final String taskname;
@@ -26,6 +29,7 @@ class TaskItem extends StatefulWidget {
 
 class _TaskItem extends State<TaskItem> {
   final List<String> selectedTags = [];
+  final List<String> originalTags = [];
   final tagcontroller = TextEditingController();
   final tasknamecontroller = TextEditingController();
   final taskdescontroller = TextEditingController();
@@ -59,10 +63,13 @@ class _TaskItem extends State<TaskItem> {
 
   Future<void> loadTaskTags() async {
     final tags = await context.read<TaskProvider>().getTagsForTask(widget.id);
-
+    final tagNames = tags.map((tag) => tag['tag_name'] as String).toList();
     selectedTags
       ..clear()
-      ..addAll(tags.map((tag) => tag['tag_name'] as String));
+      ..addAll(tagNames);
+    originalTags
+      ..clear()
+      ..addAll(tagNames);
   }
 
   Future<void> changeCompletedStatus(bool value) async {
@@ -89,10 +96,24 @@ class _TaskItem extends State<TaskItem> {
       createdAt: createdAt,
       completed: value,
     );
+    Fluttertoast.showToast(
+      msg: 'Edited',
+      textColor: Colors.white,
+      backgroundColor: Colors.green,
+      gravity: ToastGravity.TOP,
+      toastLength: Toast.LENGTH_LONG,
+    );
   }
 
   Future<void> deleteTask() async {
     await context.read<TaskProvider>().deleteTask(widget.id);
+    Fluttertoast.showToast(
+      msg: 'Deleted',
+      textColor: Colors.white,
+      gravity: ToastGravity.TOP,
+      backgroundColor: Colors.green,
+      toastLength: Toast.LENGTH_LONG,
+    );
   }
 
   @override
@@ -139,6 +160,8 @@ class _TaskItem extends State<TaskItem> {
               selectedTags.clear();
               tagcontroller.clear();
               await loadTaskTags();
+              final originalCompleted = widget.completed == 1;
+              final originalTagsSnapshot = List<String>.from(originalTags);
               if (!context.mounted) return;
               final taskProvider = context.read<TaskProvider>();
               showModalBottomSheet(
@@ -151,6 +174,14 @@ class _TaskItem extends State<TaskItem> {
                 builder: (context) {
                   return StatefulBuilder(
                     builder: (context, setModalState) {
+                      final hasChanges =
+                          tasknamecontroller.text.trim() != widget.taskname ||
+                          taskdescontroller.text.trim() != widget.taskdes ||
+                          !setEquals(
+                            selectedTags.toSet(),
+                            originalTagsSnapshot.toSet(),
+                          ) ||
+                          isChecked != originalCompleted;
                       return Padding(
                         padding: EdgeInsets.fromLTRB(
                           16,
@@ -174,6 +205,9 @@ class _TaskItem extends State<TaskItem> {
                               children: [
                                 Expanded(
                                   child: TextField(
+                                    onChanged: (value) {
+                                      setModalState(() {});
+                                    },
                                     style: TextStyle(color: Color(0xFFE9DDFF)),
                                     controller: tasknamecontroller,
                                     decoration: InputDecoration(
@@ -213,6 +247,9 @@ class _TaskItem extends State<TaskItem> {
                             ),
                             SizedBox(height: 10),
                             TextField(
+                              onChanged: (value) {
+                                setModalState(() {});
+                              },
                               style: TextStyle(color: Color(0xFFE9DDFF)),
                               controller: taskdescontroller,
                               maxLines: 4,
@@ -378,24 +415,40 @@ class _TaskItem extends State<TaskItem> {
                             SizedBox(height: 16),
 
                             SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () async {
-                                await editFunction(
-                                  widget.id,
-                                  tasknamecontroller.text,
-                                  taskdescontroller.text,
-                                  widget.createdAt,
-                                  isChecked,
-                                );
-                                await taskProvider.updateTaskTags(
-                                  widget.id,
-                                  List<String>.from(selectedTags),
-                                );
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                }
-                              },
-                              child: Text('Edit'),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: foregroundColor,
+                                  foregroundColor: backgroundColor,
+                                  disabledBackgroundColor: Color.fromARGB(
+                                    255,
+                                    158,
+                                    152,
+                                    168,
+                                  ),
+                                  disabledForegroundColor: Colors.white54,
+                                ),
+                                onPressed: !hasChanges
+                                    ? null
+                                    : () async {
+                                        await editFunction(
+                                          widget.id,
+                                          tasknamecontroller.text.trim(),
+                                          taskdescontroller.text.trim(),
+                                          widget.createdAt,
+                                          isChecked,
+                                        );
+                                        await taskProvider.updateTaskTags(
+                                          widget.id,
+                                          List<String>.from(selectedTags),
+                                        );
+                                        if (context.mounted) {
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                child: Text('Edit Task'),
+                              ),
                             ),
                           ],
                         ),

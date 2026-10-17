@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 
 import './../providers/task_provider.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -23,8 +25,14 @@ class _HomeScreen extends State<HomeScreen> {
   final List<String> selectedTags = [];
   Future<bool> insertTasktodb() async {
     if (tasknamecontroller.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Please enter a task name')));
+      Fluttertoast.showToast(
+        msg: 'Please enter a task name',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
       return false;
     }
 
@@ -32,6 +40,13 @@ class _HomeScreen extends State<HomeScreen> {
       tasknamecontroller.text.trim(),
       taskdetailscontroller.text.trim(),
       List<String>.from(selectedTags),
+    );
+    Fluttertoast.showToast(
+      msg: 'Added',
+      textColor: Colors.white,
+      backgroundColor: Colors.green,
+      gravity: ToastGravity.TOP,
+      toastLength: Toast.LENGTH_LONG,
     );
 
     return true;
@@ -60,6 +75,10 @@ class _HomeScreen extends State<HomeScreen> {
     // TODO: implement build
     return Scaffold(
       backgroundColor: backgroundColor,
+      appBar: AppBar(
+        title: Text('To Do List', style: TextStyle(color: foregroundColor)),
+        backgroundColor: backgroundColor,
+      ),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -92,9 +111,7 @@ class _HomeScreen extends State<HomeScreen> {
                               fillColor: cardColor,
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: foregroundColor
-                                ),
+                                borderSide: BorderSide(color: foregroundColor),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -134,9 +151,7 @@ class _HomeScreen extends State<HomeScreen> {
                             labelStyle: TextStyle(color: foregroundColor),
                             backgroundColor: cardColor,
                             selectedColor: Color(0xFF475569),
-                            side: BorderSide(
-                              color: foregroundColor,
-                            ),
+                            side: BorderSide(color: foregroundColor),
                             label: Text('All'),
                             selected: taskProvider.selectedTagId == null,
                             onSelected: (_) {
@@ -151,9 +166,7 @@ class _HomeScreen extends State<HomeScreen> {
                               labelStyle: TextStyle(color: foregroundColor),
                               backgroundColor: cardColor,
                               selectedColor: Color(0xFF475569),
-                              side: BorderSide(
-                                color: foregroundColor,
-                              ),
+                              side: BorderSide(color: foregroundColor),
                               label: Text(tag['tag_name'] as String),
                               selected: taskProvider.selectedTagId == tagId,
                               onSelected: (_) {
@@ -260,6 +273,9 @@ class _HomeScreen extends State<HomeScreen> {
                             SizedBox(height: 10),
 
                             TextField(
+                              onChanged: (value) {
+                                setModalState(() {});
+                              },
                               controller: tasknamecontroller,
                               style: TextStyle(color: foregroundColor),
                               decoration: InputDecoration(
@@ -445,7 +461,6 @@ class _HomeScreen extends State<HomeScreen> {
                                 ),
                               ),
                             ],
-
                             SizedBox(height: 16),
                             SizedBox(
                               width: double.infinity,
@@ -453,16 +468,26 @@ class _HomeScreen extends State<HomeScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: foregroundColor,
                                   foregroundColor: backgroundColor,
+                                  disabledBackgroundColor: Color.fromARGB(
+                                    255,
+                                    158,
+                                    152,
+                                    168,
+                                  ),
+                                  disabledForegroundColor: Colors.white54,
                                 ),
-                                onPressed: () async {
-                                  final isSaved = await insertTasktodb();
+                                onPressed:
+                                    tasknamecontroller.text.trim().isEmpty
+                                    ? null
+                                    : () async {
+                                        final isSaved = await insertTasktodb();
 
-                                  if (isSaved && context.mounted) {
-                                    selectedTags.clear();
-                                    tagcontroller.clear();
-                                    Navigator.pop(context);
-                                  }
-                                },
+                                        if (isSaved && context.mounted) {
+                                          selectedTags.clear();
+                                          tagcontroller.clear();
+                                          Navigator.pop(context);
+                                        }
+                                      },
                                 child: Text('Save Task'),
                               ),
                             ),
