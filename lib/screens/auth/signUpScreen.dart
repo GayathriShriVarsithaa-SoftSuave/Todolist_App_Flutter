@@ -38,6 +38,14 @@ class _SignUpPage extends State<SignUpPage> {
       final userCredential = await FirebaseAuth.instance.signInWithCredential(
         credential,
       );
+      Fluttertoast.showToast(
+        msg: 'Signed Up',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
 
       print('Google sign-in successful');
       print('Email: ${userCredential.user?.email}');
