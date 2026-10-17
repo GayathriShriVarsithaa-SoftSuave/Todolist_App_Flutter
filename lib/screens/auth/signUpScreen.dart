@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -47,24 +48,119 @@ class _SignUpPage extends State<SignUpPage> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Google sign-in failed')),
+      Fluttertoast.showToast(
+        msg: e.message ?? 'Google sign-in failed',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
     } catch (e) {
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+      Fluttertoast.showToast(
+        msg: 'Google sign-in failed: $e',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
 
   Future<void> signup() async {
     final auth = FirebaseAuth.instance;
-
+    if (mailcontroller.text.trim().isEmpty ||
+        passwordcontroller.text.trim().isEmpty ||
+        conformpasswordcontroller.text.trim().isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'Enter all fields',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
     if (passwordcontroller.text != conformpasswordcontroller.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      Fluttertoast.showToast(
+        msg: 'Passwords do not match',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    if (!mailcontroller.text.trim().contains('@')) {
+      Fluttertoast.showToast(
+        msg: 'Not a valid Mail',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    if (passwordcontroller.text.trim().length < 6) {
+      Fluttertoast.showToast(
+        msg: 'Minimum password length must be 6 characters',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    if (!passwordcontroller.text.trim().contains(RegExp(r'[A-Z]'))) {
+      Fluttertoast.showToast(
+        msg: 'Password must atleast contain 1 uppercase',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    if (!passwordcontroller.text.trim().contains(RegExp(r'[a-z]'))) {
+      Fluttertoast.showToast(
+        msg: 'Password must atleast contain 1 lowercase',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    if (!passwordcontroller.text.trim().contains(RegExp(r'[0-9]'))) {
+      Fluttertoast.showToast(
+        msg: 'Password must atleast contain 1 number',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    if (!passwordcontroller.text.contains(
+      RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]'),
+    )) {
+      Fluttertoast.showToast(
+        msg: 'Password must contain at least 1 special character',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
       return;
     }
 
@@ -82,9 +178,14 @@ class _SignUpPage extends State<SignUpPage> {
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message ?? 'Sign up failed')));
+      Fluttertoast.showToast(
+        msg: e.message ?? 'Sign up failed',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
 
@@ -125,26 +226,24 @@ class _SignUpPage extends State<SignUpPage> {
                   child: TextField(
                     controller: mailcontroller,
                     keyboardType: TextInputType.emailAddress,
-                    style: TextStyle(color: foregroundColor),
+                    style: TextStyle(color: backgroundColor),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.mail_outline,
-                        color: foregroundColor,
+                        color: backgroundColor,
                       ),
                       hintText: 'Enter your mail id',
-                      hintStyle: TextStyle(
-                        color: foregroundColor,
-                      ),
+                      hintStyle: TextStyle(color: backgroundColor),
                       filled: true,
                       fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: foregroundColor),
+                        borderSide: BorderSide(color: backgroundColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: foregroundColor,
+                          color: backgroundColor,
                           width: 2,
                         ),
                       ),
@@ -156,26 +255,24 @@ class _SignUpPage extends State<SignUpPage> {
                   child: TextField(
                     controller: passwordcontroller,
                     obscureText: !isPasswordVisible,
-                    style: TextStyle(color: foregroundColor),
+                    style: TextStyle(color: backgroundColor),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: foregroundColor,
+                        color: backgroundColor,
                       ),
                       hintText: 'Enter your password',
-                      hintStyle: TextStyle(
-                        color: foregroundColor,
-                      ),
+                      hintStyle: TextStyle(color: backgroundColor),
                       filled: true,
                       fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: foregroundColor),
+                        borderSide: BorderSide(color: backgroundColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: foregroundColor,
+                          color: backgroundColor,
                           width: 2,
                         ),
                       ),
@@ -184,7 +281,7 @@ class _SignUpPage extends State<SignUpPage> {
                           isPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: foregroundColor,
+                          color: backgroundColor,
                         ),
                         onPressed: () {
                           setState(() {
@@ -200,26 +297,24 @@ class _SignUpPage extends State<SignUpPage> {
                   child: TextField(
                     controller: conformpasswordcontroller,
                     obscureText: !isConfirmPasswordVisible,
-                    style: TextStyle(color: foregroundColor),
+                    style: TextStyle(color: backgroundColor),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: foregroundColor,
+                        color: backgroundColor,
                       ),
                       hintText: 'Confirm password',
-                      hintStyle: TextStyle(
-                        color: foregroundColor,
-                      ),
+                      hintStyle: TextStyle(color: backgroundColor),
                       filled: true,
                       fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: foregroundColor),
+                        borderSide: BorderSide(color: backgroundColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: foregroundColor,
+                          color: backgroundColor,
                           width: 2,
                         ),
                       ),
@@ -228,7 +323,7 @@ class _SignUpPage extends State<SignUpPage> {
                           isConfirmPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: foregroundColor,
+                          color: backgroundColor,
                         ),
                         onPressed: () {
                           setState(() {

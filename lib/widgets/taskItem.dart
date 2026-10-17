@@ -124,9 +124,13 @@ class _TaskItem extends State<TaskItem> {
               await changeCompletedStatus(value);
             },
           ),
-          Text(
-            widget.taskname,
-            style: TextStyle(color: foregroundColor, fontSize: 16),
+          Expanded(
+            child: Text(
+              widget.taskname,
+              style: TextStyle(color: foregroundColor, fontSize: 16),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
           Spacer(),
           IconButton(
