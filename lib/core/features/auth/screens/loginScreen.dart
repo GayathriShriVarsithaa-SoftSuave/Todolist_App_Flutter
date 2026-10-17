@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import './../services/auth_services.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -15,28 +15,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
+  final AuthServices authServices = AuthServices();
   final mailController = TextEditingController();
   final passwordContorller = TextEditingController();
-  final auth = FirebaseAuth.instance;
   bool ispasswordVisible = false;
 
   Future<void> signInWithGoogle() async {
     try {
-      // 1. Open Google account selection
-      final googleUser = await GoogleSignIn.instance.authenticate();
-
-      // 2. Get the Google authentication token
-      final googleAuth = googleUser.authentication;
-
-      // 3. Create Firebase credential using Google's ID token
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
-
-      // 4. Sign in to Firebase
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
+      final userCredential = await authServices.signInWithGoogle();
+      if (!mounted) return;
       Fluttertoast.showToast(
         msg: 'Signed In',
         toastLength: Toast.LENGTH_LONG,
@@ -49,9 +36,6 @@ class _LoginPage extends State<LoginPage> {
       print('Google sign-in successful');
       print('Email: ${userCredential.user?.email}');
       print('UID: ${userCredential.user?.uid}');
-
-      // Your existing GoRouter auth listener should
-      // redirect the authenticated user to /home.
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
@@ -102,13 +86,12 @@ class _LoginPage extends State<LoginPage> {
       return;
     }
     try {
-      final userCredential = await auth.signInWithEmailAndPassword(
-        email: mailController.text.trim(),
+      final userCredential = await authServices.login(
+        email: mailController.text,
         password: passwordContorller.text,
       );
-      print(userCredential);
+
       print('Login successful: ${userCredential.user?.email}');
-      print('uid:${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(
         msg: e.message ?? 'Login failed',

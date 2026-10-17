@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:todolist_app/core/router/app_router.dart';
-import 'package:todolist_app/core/features/home/homeScreen.dart';
+import 'package:todolist_app/core/features/home/screen/homeScreen.dart';
 
-import './firebase_options.dart';
+import 'core/firebase/firebase_options.dart';
 import 'core/features/auth/screens/loginScreen.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';

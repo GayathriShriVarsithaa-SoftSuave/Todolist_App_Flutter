@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import './../services/auth_services.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -14,6 +14,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPage extends State<SignUpPage> {
+  final AuthServices authServices = AuthServices();
   final mailcontroller = TextEditingController();
   final passwordcontroller = TextEditingController();
   final conformpasswordcontroller = TextEditingController();
@@ -23,23 +24,10 @@ class _SignUpPage extends State<SignUpPage> {
 
   Future<void> signInWithGoogle() async {
     try {
-      // 1. Open Google account selection
-      final googleUser = await GoogleSignIn.instance.authenticate();
-
-      // 2. Get the Google authentication token
-      final googleAuth = googleUser.authentication;
-
-      // 3. Create Firebase credential using Google's ID token
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
-
-      // 4. Sign in to Firebase
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
+      final userCredential = await authServices.signInWithGoogle();
+      if (!mounted) return;
       Fluttertoast.showToast(
-        msg: 'Signed Up',
+        msg: 'Signed In',
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.green,
@@ -50,9 +38,6 @@ class _SignUpPage extends State<SignUpPage> {
       print('Google sign-in successful');
       print('Email: ${userCredential.user?.email}');
       print('UID: ${userCredential.user?.uid}');
-
-      // Your existing GoRouter auth listener should
-      // redirect the authenticated user to /home.
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
@@ -78,7 +63,6 @@ class _SignUpPage extends State<SignUpPage> {
   }
 
   Future<void> signup() async {
-    final auth = FirebaseAuth.instance;
     if (mailcontroller.text.trim().isEmpty ||
         passwordcontroller.text.trim().isEmpty ||
         conformpasswordcontroller.text.trim().isEmpty) {
@@ -173,19 +157,22 @@ class _SignUpPage extends State<SignUpPage> {
     }
 
     try {
-      final userCredential = await auth.createUserWithEmailAndPassword(
-        email: mailcontroller.text.trim(),
+      final userCredential = await authServices.signup(
+        email: mailcontroller.text,
         password: passwordcontroller.text,
       );
 
       if (!mounted) return;
 
       if (userCredential.user != null) {
-        print(UserCredential);
+        print('Signup successful: ${userCredential.user?.email}');
+        print('UID: ${userCredential.user?.uid}');
+
         context.go('/home');
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
+
       Fluttertoast.showToast(
         msg: e.message ?? 'Sign up failed',
         toastLength: Toast.LENGTH_LONG,
