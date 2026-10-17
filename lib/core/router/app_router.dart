@@ -1,17 +1,17 @@
 import 'package:go_router/go_router.dart';
 
-import './../screens/auth/loginScreen.dart';
+import '../features/auth/screens/loginScreen.dart';
 
-import './../screens/auth/signUpScreen.dart';
+import '../features/auth/screens/signUpScreen.dart';
 
-import './../screens/homeScreen.dart';
+import '../features/home/homeScreen.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
 import 'package:provider/provider.dart';
-import './../providers/task_provider.dart';
+import '../providers/task_provider.dart';
 class AuthNotifier extends ChangeNotifier {
   late final StreamSubscription<User?> _subscription;
   AuthNotifier() {
