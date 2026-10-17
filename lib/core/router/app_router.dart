@@ -4,7 +4,7 @@ import '../features/auth/screens/loginScreen.dart';
 
 import '../features/auth/screens/signUpScreen.dart';
 
-import '../features/home/homeScreen.dart';
+import '../features/home/screen/homeScreen.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

@@ -43,29 +43,7 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final uid = currentUserId;
-
-      if (uid == null) {
-        tasks = [];
-        filteredTasks = [];
-        return;
-      }
-
-      if (selectedTagId == null) {
-        tasks = await _dbHelper.getAllTask(uid);
-      } else {
-        tasks = await _dbHelper.getTasksByTag(uid, selectedTagId!);
-      }
-
-      if (searchQuerey.isEmpty) {
-        filteredTasks = tasks;
-      } else {
-        filteredTasks = tasks.where((task) {
-          return task['task_name'].toString().toLowerCase().contains(
-            searchQuerey.toLowerCase(),
-          );
-        }).toList();
-      }
+      await applyFilters();
     } finally {
       isLoading = false;
       notifyListeners();
@@ -86,15 +64,27 @@ class TaskProvider extends ChangeNotifier {
     } else {
       tasks = await _dbHelper.getTasksByTag(uid, selectedTagId!);
     }
-
-    if (searchQuerey.isNotEmpty) {
-      filteredTasks = tasks.where((task) {
-        return task['task_name'].toString().toLowerCase().contains(
-          searchQuerey.toLowerCase(),
-        );
-      }).toList();
-    } else {
+    final query = searchQuerey.trim().toLowerCase();
+    if (query.isEmpty) {
       filteredTasks = tasks;
+    } else {
+      final results = <Map<String, dynamic>>[];
+
+      for (final task in tasks) {
+        final taskName = (task['task_name'] ?? '').toString().toLowerCase();
+        final taskId = task['id'] as int;
+        final taskTags = await _dbHelper.getTagsForTask(taskId);
+        final matchesTaskName = taskName.contains(query);
+        final matchesTag = taskTags.any((tag) {
+          return (tag['tag_name'] ?? '').toString().toLowerCase().contains(
+            query,
+          );
+        });
+        if (matchesTaskName || matchesTag) {
+          results.add(task);
+        }
+      }
+      filteredTasks = results;
     }
 
     notifyListeners();
@@ -166,12 +156,11 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<List<Map<String, dynamic>>> getTagsForTask(int taskId) {
-  return _dbHelper.getTagsForTask(taskId);
-}
+    return _dbHelper.getTagsForTask(taskId);
+  }
 
-Future<void> updateTaskTags(int taskId, List<String> tagNames) async {
-  await _dbHelper.updateTaskTags(taskId, tagNames);
-  await loadTags();
-}
-  
+  Future<void> updateTaskTags(int taskId, List<String> tagNames) async {
+    await _dbHelper.updateTaskTags(taskId, tagNames);
+    await loadTags();
+  }
 }
