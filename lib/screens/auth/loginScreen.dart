@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -46,18 +47,52 @@ class _LoginPage extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Google sign-in failed')),
+      Fluttertoast.showToast(
+        msg: e.message ?? 'Google sign-in failed',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+      Fluttertoast.showToast(
+        msg: 'Google sign-in failed: $e',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
 
   Future<void> login() async {
+    if (mailController.text.trim().isEmpty ||
+        passwordContorller.text.trim().isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'Enter all fields',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    if (!mailController.text.trim().contains('@')) {
+      Fluttertoast.showToast(
+        msg: 'Not a valid Mail',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.deepOrangeAccent,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
     try {
       final userCredential = await auth.signInWithEmailAndPassword(
         email: mailController.text.trim(),
@@ -67,8 +102,14 @@ class _LoginPage extends State<LoginPage> {
       print('Login successful: ${userCredential.user?.email}');
       print('uid:${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message ?? 'Login failed')));
+      Fluttertoast.showToast(
+        msg: e.message ?? 'Login failed',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
   }
 
@@ -109,26 +150,24 @@ class _LoginPage extends State<LoginPage> {
                   child: TextField(
                     controller: mailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: TextStyle(color: foregroundColor),
+                    style: TextStyle(color: backgroundColor),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.mail_outline,
-                        color: foregroundColor,
+                        color: backgroundColor,
                       ),
                       hintText: 'Enter your mail id',
-                      hintStyle: TextStyle(
-                        color: foregroundColor,
-                      ),
+                      hintStyle: TextStyle(color: backgroundColor),
                       filled: true,
                       fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: foregroundColor),
+                        borderSide: BorderSide(color: backgroundColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: foregroundColor,
+                          color: backgroundColor,
                           width: 2,
                         ),
                       ),
@@ -140,26 +179,24 @@ class _LoginPage extends State<LoginPage> {
                   child: TextField(
                     controller: passwordContorller,
                     obscureText: !ispasswordVisible,
-                    style: TextStyle(color: foregroundColor),
+                    style: TextStyle(color: backgroundColor),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: foregroundColor,
+                        color: backgroundColor,
                       ),
                       hintText: 'Enter your password',
-                      hintStyle: TextStyle(
-                        color: foregroundColor,
-                      ),
+                      hintStyle: TextStyle(color: backgroundColor),
                       filled: true,
                       fillColor: foregroundColor,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: foregroundColor),
+                        borderSide: BorderSide(color: backgroundColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: foregroundColor,
+                          color: backgroundColor,
                           width: 2,
                         ),
                       ),
@@ -168,7 +205,7 @@ class _LoginPage extends State<LoginPage> {
                           ispasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: foregroundColor,
+                          color: backgroundColor,
                         ),
                         onPressed: () {
                           setState(() {
