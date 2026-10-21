@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:go_router/go_router.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
-import './../services/auth_services.dart';
-import './../../../services/toast_msg.dart';
+import './../services/login_services.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,61 +12,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-  final AuthServices authServices = AuthServices();
   final mailController = TextEditingController();
   final passwordContorller = TextEditingController();
   bool ispasswordVisible = false;
-
-  Future<void> signInWithGoogle() async {
-    try {
-      final userCredential = await authServices.signInWithGoogle();
-      if (!mounted) return;
-      showToastMsg('Signed In', Colors.green, Toast.LENGTH_LONG);
-      print('Google sign-in successful');
-      print('Email: ${userCredential.user?.email}');
-      print('UID: ${userCredential.user?.uid}');
-    } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      showToastMsg(
-        e.message ?? 'Google sign-in failed',
-        Colors.red,
-        Toast.LENGTH_LONG,
-      );
-    } catch (e) {
-      if (!mounted) return;
-      showToastMsg('Google sign-in failed: $e', Colors.red, Toast.LENGTH_LONG);
-    }
-  }
-
-  Future<void> login() async {
-    if (mailController.text.trim().isEmpty ||
-        passwordContorller.text.trim().isEmpty) {
-      showToastMsg(
-        'Enter all fields',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return;
-    }
-    if (!mailController.text.trim().contains('@')) {
-      showToastMsg(
-        'Not a valid Mail',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return;
-    }
-    try {
-      final userCredential = await authServices.login(
-        email: mailController.text,
-        password: passwordContorller.text,
-      );
-
-      print('Login successful: ${userCredential.user?.email}');
-    } on FirebaseAuthException catch (e) {
-      showToastMsg(e.message ?? 'Login failed', Colors.red, Toast.LENGTH_LONG);
-    }
-  }
 
   @override
   void dispose() {
@@ -182,7 +126,9 @@ class _LoginPage extends State<LoginPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 30, right: 30),
                   child: OutlinedButton.icon(
-                    onPressed: signInWithGoogle,
+                    onPressed: () {
+                      signInWithGoogle(context);
+                    },
                     icon: Icon(Icons.login, color: foregroundColor),
                     label: Text(
                       'Sign in with Google',
@@ -201,7 +147,9 @@ class _LoginPage extends State<LoginPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 30, right: 30),
                   child: ElevatedButton(
-                    onPressed: login,
+                    onPressed: () {
+                      login(mailController, passwordContorller);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: foregroundColor,
                       foregroundColor: backgroundColor,

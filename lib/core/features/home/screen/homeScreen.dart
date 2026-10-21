@@ -11,6 +11,8 @@ import '../../../providers/task_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import './../../../services/toast_msg.dart';
+import './../../../services/logout.dart';
+import './../service/homeService.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -26,33 +28,25 @@ class _HomeScreen extends State<HomeScreen> {
   final taskdetailscontroller = TextEditingController();
   final tagcontroller = TextEditingController();
   final List<String> selectedTags = [];
-  Future<bool> insertTasktodb() async {
-    if (tasknamecontroller.text.trim().isEmpty) {
-      showToastMsg(
-        'Please enter a task name',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return false;
-    }
+  // Future<bool> insertTasktodb() async {
+  //   if (tasknamecontroller.text.trim().isEmpty) {
+  //     showToastMsg(
+  //       'Please enter a task name',
+  //       Colors.deepOrangeAccent,
+  //       Toast.LENGTH_SHORT,
+  //     );
+  //     return false;
+  //   }
 
-    await context.read<TaskProvider>().addTaskWithTags(
-      tasknamecontroller.text.trim(),
-      taskdetailscontroller.text.trim(),
-      List<String>.from(selectedTags),
-    );
-    showToastMsg(
-        'Added',
-        Colors.green,
-        Toast.LENGTH_LONG,
-      );
+  //   await context.read<TaskProvider>().addTaskWithTags(
+  //     tasknamecontroller.text.trim(),
+  //     taskdetailscontroller.text.trim(),
+  //     List<String>.from(selectedTags),
+  //   );
+  //   showToastMsg('Added', Colors.green, Toast.LENGTH_LONG);
 
-    return true;
-  }
-
-  Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
-  }
+  //   return true;
+  // }
 
   @override
   void dispose() {
@@ -475,7 +469,12 @@ class _HomeScreen extends State<HomeScreen> {
                                     tasknamecontroller.text.trim().isEmpty
                                     ? null
                                     : () async {
-                                        final isSaved = await insertTasktodb();
+                                        final isSaved = await insertTasktodb(
+                                          context,
+                                          tasknamecontroller,
+                                          taskdetailscontroller,
+                                          selectedTags,
+                                        );
 
                                         if (isSaved && context.mounted) {
                                           selectedTags.clear();
