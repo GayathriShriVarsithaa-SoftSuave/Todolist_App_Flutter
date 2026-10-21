@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import './../services/auth_services.dart';
+import './../../../services/toast_msg.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -24,64 +25,38 @@ class _LoginPage extends State<LoginPage> {
     try {
       final userCredential = await authServices.signInWithGoogle();
       if (!mounted) return;
-      Fluttertoast.showToast(
-        msg: 'Signed In',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-
+      showToastMsg('Signed In', Colors.green, Toast.LENGTH_LONG);
       print('Google sign-in successful');
       print('Email: ${userCredential.user?.email}');
       print('UID: ${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-
-      Fluttertoast.showToast(
-        msg: e.message ?? 'Google sign-in failed',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        e.message ?? 'Google sign-in failed',
+        Colors.red,
+        Toast.LENGTH_LONG,
       );
     } catch (e) {
       if (!mounted) return;
-
-      Fluttertoast.showToast(
-        msg: 'Google sign-in failed: $e',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      showToastMsg('Google sign-in failed: $e', Colors.red, Toast.LENGTH_LONG);
     }
   }
 
   Future<void> login() async {
     if (mailController.text.trim().isEmpty ||
         passwordContorller.text.trim().isEmpty) {
-      Fluttertoast.showToast(
-        msg: 'Enter all fields',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Enter all fields',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return;
     }
     if (!mailController.text.trim().contains('@')) {
-      Fluttertoast.showToast(
-        msg: 'Not a valid Mail',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Not a valid Mail',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return;
     }
@@ -93,14 +68,7 @@ class _LoginPage extends State<LoginPage> {
 
       print('Login successful: ${userCredential.user?.email}');
     } on FirebaseAuthException catch (e) {
-      Fluttertoast.showToast(
-        msg: e.message ?? 'Login failed',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      showToastMsg(e.message ?? 'Login failed', Colors.red, Toast.LENGTH_LONG);
     }
   }
 
@@ -247,7 +215,7 @@ class _LoginPage extends State<LoginPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: textColor
+                        color: textColor,
                       ),
                     ),
                   ),

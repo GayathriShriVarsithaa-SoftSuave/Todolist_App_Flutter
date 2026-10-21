@@ -10,6 +10,8 @@ import '../../../providers/task_provider.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 
+import './../../../services/toast_msg.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -26,13 +28,10 @@ class _HomeScreen extends State<HomeScreen> {
   final List<String> selectedTags = [];
   Future<bool> insertTasktodb() async {
     if (tasknamecontroller.text.trim().isEmpty) {
-      Fluttertoast.showToast(
-        msg: 'Please enter a task name',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Please enter a task name',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return false;
     }
@@ -42,13 +41,11 @@ class _HomeScreen extends State<HomeScreen> {
       taskdetailscontroller.text.trim(),
       List<String>.from(selectedTags),
     );
-    Fluttertoast.showToast(
-      msg: 'Added',
-      textColor: Colors.white,
-      backgroundColor: Colors.green,
-      gravity: ToastGravity.TOP,
-      toastLength: Toast.LENGTH_LONG,
-    );
+    showToastMsg(
+        'Added',
+        Colors.green,
+        Toast.LENGTH_LONG,
+      );
 
     return true;
   }
