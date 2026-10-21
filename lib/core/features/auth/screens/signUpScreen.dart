@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
-import './../services/auth_services.dart';
-import './../../../services/toast_msg.dart';
+import './../services/signup_services.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -15,110 +12,12 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPage extends State<SignUpPage> {
-  final AuthServices authServices = AuthServices();
   final mailcontroller = TextEditingController();
   final passwordcontroller = TextEditingController();
   final conformpasswordcontroller = TextEditingController();
 
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
-
-  Future<void> signInWithGoogle() async {
-    try {
-      final userCredential = await authServices.signInWithGoogle();
-      if (!mounted) return;
-      showToastMsg('Signed In', Colors.green, Toast.LENGTH_LONG);
-      print('Google sign-in successful');
-      print('Email: ${userCredential.user?.email}');
-      print('UID: ${userCredential.user?.uid}');
-    } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      showToastMsg(
-        e.message ?? 'Google sign-in failed',
-        Colors.red,
-        Toast.LENGTH_LONG,
-      );
-    } catch (e) {
-      if (!mounted) return;
-      showToastMsg('Google sign-in failed: $e', Colors.red, Toast.LENGTH_LONG);
-    }
-  }
-
-  Future<void> signup() async {
-    final bool showToaster =
-        !passwordcontroller.text.trim().contains(RegExp(r'[A-Z]')) ||
-        !passwordcontroller.text.trim().contains(RegExp(r'[a-z]')) ||
-        !passwordcontroller.text.trim().contains(RegExp(r'[0-9]')) ||
-        !passwordcontroller.text.trim().contains(
-          RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]'),
-        );
-
-    if (mailcontroller.text.trim().isEmpty ||
-        passwordcontroller.text.trim().isEmpty ||
-        conformpasswordcontroller.text.trim().isEmpty) {
-      showToastMsg(
-        'Enter all fields',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return;
-    }
-    if (passwordcontroller.text != conformpasswordcontroller.text) {
-      showToastMsg(
-        'Passwords do not match',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return;
-    }
-    if (!mailcontroller.text.trim().contains('@')) {
-      showToastMsg(
-        'Not a valid Mail',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return;
-    }
-    if (passwordcontroller.text.trim().length < 6) {
-      showToastMsg(
-        'Minimum password length must be 6 characters',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return;
-    }
-    if (showToaster) {
-      showToastMsg(
-        'Password must atleast contain 1 uppercase, 1 lowercase, 1 number and 1 special character',
-        Colors.deepOrangeAccent,
-        Toast.LENGTH_SHORT,
-      );
-      return;
-    }
-
-    try {
-      final userCredential = await authServices.signup(
-        email: mailcontroller.text,
-        password: passwordcontroller.text,
-      );
-
-      if (!mounted) return;
-
-      if (userCredential.user != null) {
-        print('Signup successful: ${userCredential.user?.email}');
-        print('UID: ${userCredential.user?.uid}');
-
-        context.go('/home');
-      }
-    } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      showToastMsg(
-        e.message ?? 'Sign up failed',
-        Colors.red,
-        Toast.LENGTH_LONG,
-      );
-    }
-  }
 
   @override
   void dispose() {
@@ -273,7 +172,9 @@ class _SignUpPage extends State<SignUpPage> {
                 Padding(
                   padding: EdgeInsets.only(left: 30, right: 30),
                   child: OutlinedButton.icon(
-                    onPressed: signInWithGoogle,
+                    onPressed: () async {
+                      await signInWithGoogle(context);
+                    },
                     icon: Icon(Icons.login, color: foregroundColor),
                     label: Text(
                       'Sign in with Google',
@@ -292,7 +193,14 @@ class _SignUpPage extends State<SignUpPage> {
                 Padding(
                   padding: EdgeInsets.only(left: 30, right: 30),
                   child: ElevatedButton(
-                    onPressed: signup,
+                    onPressed: () async {
+                      await signup(
+                        context,
+                        passwordcontroller,
+                        mailcontroller,
+                        conformpasswordcontroller,
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: foregroundColor,
                       foregroundColor: backgroundColor,
