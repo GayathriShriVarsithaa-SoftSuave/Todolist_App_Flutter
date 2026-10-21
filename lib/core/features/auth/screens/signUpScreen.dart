@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import './../services/auth_services.dart';
+import './../../../services/toast_msg.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -26,39 +27,20 @@ class _SignUpPage extends State<SignUpPage> {
     try {
       final userCredential = await authServices.signInWithGoogle();
       if (!mounted) return;
-      Fluttertoast.showToast(
-        msg: 'Signed In',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-
+      showToastMsg('Signed In', Colors.green, Toast.LENGTH_LONG);
       print('Google sign-in successful');
       print('Email: ${userCredential.user?.email}');
       print('UID: ${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-
-      Fluttertoast.showToast(
-        msg: e.message ?? 'Google sign-in failed',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        e.message ?? 'Google sign-in failed',
+        Colors.red,
+        Toast.LENGTH_LONG,
       );
     } catch (e) {
       if (!mounted) return;
-      Fluttertoast.showToast(
-        msg: 'Google sign-in failed: $e',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      showToastMsg('Google sign-in failed: $e', Colors.red, Toast.LENGTH_LONG);
     }
   }
 
@@ -74,57 +56,42 @@ class _SignUpPage extends State<SignUpPage> {
     if (mailcontroller.text.trim().isEmpty ||
         passwordcontroller.text.trim().isEmpty ||
         conformpasswordcontroller.text.trim().isEmpty) {
-      Fluttertoast.showToast(
-        msg: 'Enter all fields',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Enter all fields',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return;
     }
     if (passwordcontroller.text != conformpasswordcontroller.text) {
-      Fluttertoast.showToast(
-        msg: 'Passwords do not match',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Passwords do not match',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return;
     }
     if (!mailcontroller.text.trim().contains('@')) {
-      Fluttertoast.showToast(
-        msg: 'Not a valid Mail',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Not a valid Mail',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return;
     }
     if (passwordcontroller.text.trim().length < 6) {
-      Fluttertoast.showToast(
-        msg: 'Minimum password length must be 6 characters',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Minimum password length must be 6 characters',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return;
     }
     if (showToaster) {
-      Fluttertoast.showToast(
-        msg: 'Password must atleast contain 1 uppercase, 1 lowercase, 1 number and 1 special character',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.deepOrangeAccent,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        'Password must atleast contain 1 uppercase, 1 lowercase, 1 number and 1 special character',
+        Colors.deepOrangeAccent,
+        Toast.LENGTH_SHORT,
       );
       return;
     }
@@ -145,14 +112,10 @@ class _SignUpPage extends State<SignUpPage> {
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-
-      Fluttertoast.showToast(
-        msg: e.message ?? 'Sign up failed',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMsg(
+        e.message ?? 'Sign up failed',
+        Colors.red,
+        Toast.LENGTH_LONG,
       );
     }
   }
@@ -343,7 +306,7 @@ class _SignUpPage extends State<SignUpPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: textColor
+                        color: textColor,
                       ),
                     ),
                   ),

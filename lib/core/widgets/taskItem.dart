@@ -7,6 +7,8 @@ import '../providers/task_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/foundation.dart';
 
+import './../services/toast_msg.dart';
+
 class TaskItem extends StatefulWidget {
   final int id;
   final String taskname;
@@ -96,24 +98,20 @@ class _TaskItem extends State<TaskItem> {
       createdAt: createdAt,
       completed: value,
     );
-    Fluttertoast.showToast(
-      msg: 'Edited',
-      textColor: Colors.white,
-      backgroundColor: Colors.green,
-      gravity: ToastGravity.TOP,
-      toastLength: Toast.LENGTH_LONG,
-    );
+    showToastMsg(
+        'Edited',
+        Colors.green,
+        Toast.LENGTH_LONG,
+      );
   }
 
   Future<void> deleteTask() async {
     await context.read<TaskProvider>().deleteTask(widget.id);
-    Fluttertoast.showToast(
-      msg: 'Deleted',
-      textColor: Colors.white,
-      gravity: ToastGravity.TOP,
-      backgroundColor: Colors.green,
-      toastLength: Toast.LENGTH_LONG,
-    );
+    showToastMsg(
+        'Deleted',
+        Colors.green,
+        Toast.LENGTH_LONG,
+      );
   }
 
   @override
@@ -168,7 +166,7 @@ class _TaskItem extends State<TaskItem> {
                 if (!context.mounted) return;
                 final taskProvider = context.read<TaskProvider>();
                 showModalBottomSheet(
-                  backgroundColor:cardColor,
+                  backgroundColor: cardColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(24),
@@ -202,7 +200,7 @@ class _TaskItem extends State<TaskItem> {
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color:textColor,
+                                  color: textColor,
                                 ),
                               ),
                               SizedBox(height: 10),
@@ -213,18 +211,12 @@ class _TaskItem extends State<TaskItem> {
                                       onChanged: (value) {
                                         setModalState(() {});
                                       },
-                                      style: TextStyle(
-                                        color:textColor,
-                                      ),
+                                      style: TextStyle(color: textColor),
                                       controller: tasknamecontroller,
                                       decoration: InputDecoration(
                                         hintText: 'Task Title',
-                                        labelStyle: TextStyle(
-                                          color: textColor,
-                                        ),
-                                        hintStyle: TextStyle(
-                                          color: textColor,
-                                        ),
+                                        labelStyle: TextStyle(color: textColor),
+                                        hintStyle: TextStyle(color: textColor),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
                                             color: borderColor,
@@ -240,7 +232,7 @@ class _TaskItem extends State<TaskItem> {
                                   ),
                                   Checkbox(
                                     activeColor: foregroundColor,
-                                    checkColor:backgroundColor,
+                                    checkColor: backgroundColor,
                                     side: BorderSide(color: borderColor),
                                     value: isChecked,
                                     onChanged: (bool? value) {
@@ -262,20 +254,14 @@ class _TaskItem extends State<TaskItem> {
                                 maxLines: 4,
                                 decoration: InputDecoration(
                                   hintText: 'Task description',
-                                  labelStyle: TextStyle(
-                                    color: textColor,
-                                  ),
-                                  hintStyle: TextStyle(
-                                    color:textColor,
-                                  ),
+                                  labelStyle: TextStyle(color: textColor),
+                                  hintStyle: TextStyle(color: textColor),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color:borderColor,
-                                    ),
+                                    borderSide: BorderSide(color: borderColor),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color:foregroundColor,
+                                      color: foregroundColor,
                                     ),
                                   ),
                                 ),
@@ -305,12 +291,10 @@ class _TaskItem extends State<TaskItem> {
                                       final tagName = tag['tag_name'] as String;
 
                                       return FilterChip(
-                                        selectedColor:foregroundColor,
-                                        checkmarkColor:backgroundColor,
-                                        labelStyle: TextStyle(
-                                          color: textColor,
-                                        ),
-                                        backgroundColor:backgroundColor,
+                                        selectedColor: foregroundColor,
+                                        checkmarkColor: backgroundColor,
+                                        labelStyle: TextStyle(color: textColor),
+                                        backgroundColor: backgroundColor,
                                         label: Text(tagName),
                                         selected: selectedTags.contains(
                                           tagName,
@@ -340,18 +324,12 @@ class _TaskItem extends State<TaskItem> {
                                 children: [
                                   Expanded(
                                     child: TextField(
-                                      style: TextStyle(
-                                        color:textColor,
-                                      ),
+                                      style: TextStyle(color: textColor),
                                       controller: tagcontroller,
                                       decoration: InputDecoration(
                                         hintText: 'Create new tag',
-                                        labelStyle: TextStyle(
-                                          color:textColor,
-                                        ),
-                                        hintStyle: TextStyle(
-                                          color:textColor,
-                                        ),
+                                        labelStyle: TextStyle(color: textColor),
+                                        hintStyle: TextStyle(color: textColor),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
                                             color: borderColor,
@@ -399,7 +377,7 @@ class _TaskItem extends State<TaskItem> {
                                     'Selected Tags',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color:textColor,
+                                      color: textColor,
                                     ),
                                   ),
                                 ),
@@ -413,7 +391,9 @@ class _TaskItem extends State<TaskItem> {
                                       return Chip(
                                         labelStyle: TextStyle(color: textColor),
                                         backgroundColor: backgroundColor,
-                                        side: BorderSide(color: foregroundColor),
+                                        side: BorderSide(
+                                          color: foregroundColor,
+                                        ),
                                         label: Text(tag),
                                         onDeleted: () {
                                           setModalState(() {
