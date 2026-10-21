@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../widgets/taskItem.dart';
 
@@ -68,16 +69,27 @@ class _HomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const backgroundColor = Color(0xFF0F172A);
-    const foregroundColor = Color(0xFFE9DDFF);
-    const cardColor = Color(0xFF1E293B);
+    const backgroundColor = Color.fromRGBO(13, 43, 29, 1);
+    const foregroundColor = Color.fromRGBO(0, 230, 118, 1);
+    const cardColor = Color.fromRGBO(22, 61, 43, 1);
+    const textColor = Color.fromRGBO(255, 255, 255, 1);
+    const borderColor = Color.fromRGBO(45, 90, 67, 1);
     final taskProvider = context.watch<TaskProvider>();
     // TODO: implement build
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text('To Do List', style: TextStyle(color: foregroundColor)),
+        title: Text('To Do List', style: TextStyle(color: textColor)),
         backgroundColor: backgroundColor,
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.push('/profile');
+            },
+            icon: Icon(Icons.person),
+            color: textColor,
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(
@@ -103,22 +115,19 @@ class _HomeScreen extends State<HomeScreen> {
                             decoration: InputDecoration(
                               hintText: 'Search Tasks..',
                               hintStyle: TextStyle(color: Color(0xFFB8A7D9)),
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: foregroundColor,
-                              ),
+                              prefixIcon: Icon(Icons.search, color: textColor),
                               filled: true,
                               fillColor: cardColor,
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: foregroundColor),
+                                borderSide: BorderSide(color: borderColor),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(color: foregroundColor),
                               ),
                             ),
-                            style: TextStyle(color: foregroundColor),
+                            style: TextStyle(color: textColor),
                           ),
                         ),
                       ),
@@ -128,7 +137,7 @@ class _HomeScreen extends State<HomeScreen> {
                         },
                         style: OutlinedButton.styleFrom(
                           backgroundColor: Color(0xFF7F1D1D),
-                          foregroundColor: foregroundColor,
+                          foregroundColor: textColor,
                           side: BorderSide(color: Color(0xFFFF8A8A)),
                         ),
                         child: Text('Logout'),
@@ -148,7 +157,7 @@ class _HomeScreen extends State<HomeScreen> {
                         children: [
                           ChoiceChip(
                             checkmarkColor: foregroundColor,
-                            labelStyle: TextStyle(color: foregroundColor),
+                            labelStyle: TextStyle(color: textColor),
                             backgroundColor: cardColor,
                             selectedColor: Color(0xFF475569),
                             side: BorderSide(color: foregroundColor),
@@ -163,7 +172,7 @@ class _HomeScreen extends State<HomeScreen> {
 
                             return ChoiceChip(
                               checkmarkColor: foregroundColor,
-                              labelStyle: TextStyle(color: foregroundColor),
+                              labelStyle: TextStyle(color: textColor),
                               backgroundColor: cardColor,
                               selectedColor: Color(0xFF475569),
                               side: BorderSide(color: foregroundColor),
@@ -200,13 +209,13 @@ class _HomeScreen extends State<HomeScreen> {
                             ? Center(
                                 child: Text(
                                   'No tasks yet. Add your first task!',
-                                  style: TextStyle(color: foregroundColor),
+                                  style: TextStyle(color: textColor),
                                 ),
                               )
                             : Center(
                                 child: Text(
                                   'No matching tasks found',
-                                  style: TextStyle(color: foregroundColor),
+                                  style: TextStyle(color: textColor),
                                 ),
                               )
                       : ListView.builder(
@@ -266,7 +275,7 @@ class _HomeScreen extends State<HomeScreen> {
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: foregroundColor,
+                                  color: textColor,
                                 ),
                               ),
                             ),
@@ -280,13 +289,11 @@ class _HomeScreen extends State<HomeScreen> {
                               style: TextStyle(color: foregroundColor),
                               decoration: InputDecoration(
                                 hintText: 'Task name',
-                                hintStyle: TextStyle(color: Color(0xFFB8A7D9)),
+                                hintStyle: TextStyle(color: textColor),
                                 filled: true,
                                 fillColor: cardColor,
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0xFFB8A7D9),
-                                  ),
+                                  borderSide: BorderSide(color: borderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
@@ -303,13 +310,11 @@ class _HomeScreen extends State<HomeScreen> {
                               style: TextStyle(color: foregroundColor),
                               decoration: InputDecoration(
                                 hintText: 'Enter task description',
-                                hintStyle: TextStyle(color: Color(0xFFB8A7D9)),
+                                hintStyle: TextStyle(color: textColor),
                                 filled: true,
                                 fillColor: cardColor,
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0xFFB8A7D9),
-                                  ),
+                                  borderSide: BorderSide(color: borderColor),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
@@ -324,7 +329,7 @@ class _HomeScreen extends State<HomeScreen> {
                               'Select Tags',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: foregroundColor,
+                                color: textColor,
                               ),
                             ),
 
@@ -342,9 +347,7 @@ class _HomeScreen extends State<HomeScreen> {
                                     selectedColor: Color(0xFF475569),
                                     checkmarkColor: foregroundColor,
                                     label: Text(tagName),
-                                    labelStyle: TextStyle(
-                                      color: foregroundColor,
-                                    ),
+                                    labelStyle: TextStyle(color: textColor),
                                     backgroundColor: cardColor,
                                     selected: isSelected,
                                     onSelected: (selected) {
@@ -369,18 +372,16 @@ class _HomeScreen extends State<HomeScreen> {
                               children: [
                                 Expanded(
                                   child: TextField(
-                                    style: TextStyle(color: foregroundColor),
+                                    style: TextStyle(color: textColor),
                                     controller: tagcontroller,
                                     decoration: InputDecoration(
                                       hintText: 'Create new tag',
-                                      hintStyle: TextStyle(
-                                        color: Color(0xFFB8A7D9),
-                                      ),
+                                      hintStyle: TextStyle(color: textColor),
                                       filled: true,
                                       fillColor: cardColor,
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                          color: Color(0xFFB8A7D9),
+                                          color: borderColor,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
@@ -436,7 +437,7 @@ class _HomeScreen extends State<HomeScreen> {
                                 'Selected Tags',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: foregroundColor,
+                                  color: textColor,
                                 ),
                               ),
 
@@ -446,10 +447,12 @@ class _HomeScreen extends State<HomeScreen> {
                                   spacing: 8,
                                   children: selectedTags.map((tag) {
                                     return Chip(
-                                      labelStyle: TextStyle(
-                                        color: foregroundColor,
-                                      ),
+                                      labelStyle: TextStyle(color: textColor),
                                       backgroundColor: cardColor,
+                                      side: BorderSide(
+                                        color: foregroundColor,
+                                        width: 1.5,
+                                      ),
                                       label: Text(tag),
                                       onDeleted: () {
                                         setModalState(() {
@@ -468,12 +471,7 @@ class _HomeScreen extends State<HomeScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: foregroundColor,
                                   foregroundColor: backgroundColor,
-                                  disabledBackgroundColor: Color.fromARGB(
-                                    255,
-                                    158,
-                                    152,
-                                    168,
-                                  ),
+                                  disabledBackgroundColor: borderColor,
                                   disabledForegroundColor: Colors.white54,
                                 ),
                                 onPressed:
